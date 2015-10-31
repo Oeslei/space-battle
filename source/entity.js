@@ -1,15 +1,19 @@
+var shared = require('./game-shared');
 var point2 = require('./point2');
 var vector2 = require('./vector2');
 
 function Entity() {
 	this.position = point2();
 	this.velocity = vector2();
+	this.acceleration = 0;
 
 	this.sprite = '';
 	this.width = this.height = 0;
 }
 
 Entity.prototype.update = function(elapsed) {
+	var decelerate = vector2(this.acceleration, this.acceleration);
+
 	if (this.maxSpeed) {
 		if (this.maxSpeed.x >= 0 && Math.abs(this.velocity.x) > this.maxSpeed.x) {
 			this.velocity.x = this.maxSpeed.x * (this.velocity.x >= 0 ? 1 : -1);
@@ -22,6 +26,26 @@ Entity.prototype.update = function(elapsed) {
 
 	this.position.x += this.velocity.x * elapsed;
 	this.position.y += this.velocity.y * elapsed;
+
+	if (this.bounds) {
+		if (this.position.x < this.bounds.left) {
+			this.position.x = this.bounds.left;
+		} else if (this.position.x > (this.bounds.right - this.width)) {
+			this.position.x = this.bounds.right - this.width;
+		} else {
+			decelerate.x = 0;
+		}
+
+		if (this.position.y < this.bounds.top) {
+			this.position.y = this.bounds.top;
+		} else if (this.position.y > (this.bounds.bottom - this.height)) {
+			this.position.y = this.bounds.bottom - this.height;
+		} else {
+			decelerate.y = 0;
+		}
+
+		this.decelerate(decelerate);
+	}
 };
 
 Entity.prototype.accelerate = function(force) {
@@ -43,7 +67,7 @@ Entity.prototype.decelerate = function(force) {
 	}
 };
 
-Entity.prototype.render = function(scope) {
+Entity.prototype.render = function() {
 	if (this.entity) {
 		this.entity.style.top = this.position.y + 'px';
 		this.entity.style.left = this.position.x + 'px';
@@ -59,7 +83,7 @@ Entity.prototype.render = function(scope) {
 		this.entity.style.top = this.position.y + 'px';
 		this.entity.style.left = this.position.x + 'px';
 
-		scope.appendChild(this.entity);
+		shared.get('world').appendChild(this.entity);
 	}
 };
 

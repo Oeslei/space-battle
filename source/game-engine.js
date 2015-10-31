@@ -1,15 +1,18 @@
 var loop = require('./game-loop');
-var Entity = require('./entity');
+var shared = require('./game-shared');
+var area = require('./area');
 var keyboard = require('./keyboard');
 
+var Entity = require('./entity');
 var Player = require('./entities/player');
 
 var state;
 var frames;
 var entities;
-var scope;
 
 function start() {
+	var world;
+
 	if (state === 1) {
 		return;
 	}
@@ -18,8 +21,11 @@ function start() {
 	frames = 0;
 	entities = [];
 
-	scope = document.getElementById('game');
-	scope.innerHTML = '';
+	world = document.getElementById('game');
+	world.innerHTML = '';
+
+	shared.set('world', world);
+	shared.set('worldBounds', area(0, world.offsetWidth, world.offsetHeight, 0));
 
 	addEntity(new Player());
 
@@ -43,7 +49,7 @@ function update(elapsed) {
 
 function render() {
 	entities.forEach(function(entity) {
-		entity.render(scope);
+		entity.render();
 	});
 }
 
