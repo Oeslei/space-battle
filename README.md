@@ -1,4 +1,4 @@
 # Space-battle
 
     npm install
-    gulp
+    gulp scripts styles
