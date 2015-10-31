@@ -1,3 +1,4 @@
 var game = require('./game-engine');
+var keyboard = require('./keyboard');
 
-// game.start();
+keyboard.whenPress(keyboard.keys.SPACE, game.start, true);
