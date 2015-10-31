@@ -1,1 +1,4 @@
-# space-battle
+# Space-battle
+
+    npm install
+    gulp
